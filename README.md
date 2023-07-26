@@ -11,5 +11,6 @@ minio instance running on http://localhost:9000 . use minioadmin/minioadmin for 
 
 With this setup snapshot restore process can be easily tested.
 
+After cloning the repo run `docker-compose up`
 
 
