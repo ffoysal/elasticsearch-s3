@@ -1,0 +1,63 @@
+version: '4'
+services:
+  es01:
+    platform: linux/amd64
+    image: ffoysal/elasticsearch-minio-s3 
+    build:
+      dockerfile: ES-S3-Dockerfile
+    container_name: es01
+    environment:
+      - node.name=es-1
+      - cluster.name=es-1
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - s3.client.default.endpoint=http://<YOUR LOCAL HOST IP>:9000
+      - s3.client.default.protocol=http
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+    - es01_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  es02:
+    platform: linux/amd64
+    image: ffoysal/elasticsearch-minio-s3 
+    build:
+      dockerfile: ES-S3-Dockerfile
+    container_name: es02
+    environment:
+      - node.name=es-2
+      - cluster.name=es-2
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - s3.client.default.endpoint=http://<YOUR LOCAL HOST IP>:9000
+      - s3.client.default.protocol=http      
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+    - es02_data:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    command: server /tmp/data --console-address ":9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio_data:/tmp/data:rw  
+
+volumes:
+  es01_data:
+    driver: local
+  es02_data:
+    driver: local
+  minio_data:
+    driver: local
